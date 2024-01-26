@@ -1,12 +1,12 @@
 import axios from 'axios';
 import { connectionUrl, connectionData } from "./connectionConfig";
+import { LogCallbackType } from '../types/callbacks';
+import { MuscleNameType } from '../types/dataTypes';
+import {currentCredentials} from './credentials'
 
 // ----------------------------------------------------------------
 export const submitData = (): void => {
-    const urlSearchParams = new URLSearchParams(window.location.search);
-    const params = Object.fromEntries(urlSearchParams.entries());
-    const { ID, token } = params; // Assuming 'ID' is the query parameter name
-
+    const { ID, token } = currentCredentials();
     const postData = {
         id: ID,
         token: token,
@@ -24,10 +24,8 @@ export const submitData = (): void => {
 
 //----------------------------------------------------------------
 export const receiveData = (callback: (data: any) => void): void => {
-    const urlSearchParams = new URLSearchParams(window.location.search);
-    const params = Object.fromEntries(urlSearchParams.entries());
-    const { ID, token } = params; // Assuming 'ID' is the query parameter name
-
+    
+    const { ID, token } = currentCredentials();
     const getData = {
         id: ID,
         token: token,
@@ -37,7 +35,8 @@ export const receiveData = (callback: (data: any) => void): void => {
     axios.post(connectionUrl, getData, connectionData)
         .then(response => {
             // You may want to process the data before passing to the callback
-            const { muscles, who } = JSON.parse(response.data);
+            console.log('Response:', response.data);
+            const { muscles, who } = response.data;
             console.log("Muscles:", muscles); // Process the muscles array
             console.log("Who:", who); // Process the who array
             callback({ muscles, who });
@@ -46,3 +45,22 @@ export const receiveData = (callback: (data: any) => void): void => {
             console.error('Error:', error);
         });
 };
+//----------------------------------------------------------------
+export const getLatestLogs = (selectedMuscle:MuscleNameType, callback: LogCallbackType): void => {
+    const { ID, token } = currentCredentials();
+    const latestLogsData = {
+        id: ID, // You will need to get the ID as done before
+        token: token, // You will need to get the token as done before
+        method: "getLatestLogs",
+        muscle: selectedMuscle
+    };
+
+    axios.post(connectionUrl, latestLogsData, connectionData)
+        .then(response => {
+            console.log('Latest logs:', response.data);
+            callback(response.data);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+}
