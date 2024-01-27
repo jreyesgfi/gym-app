@@ -1,16 +1,18 @@
 import axios from 'axios';
 import { connectionUrl, connectionData } from "./connectionConfig";
 import { LogCallbackType } from '../types/callbacks';
-import { MuscleNameType } from '../types/dataTypes';
+import { MuscleNameType, TrainLogItf } from '../types/dataTypes';
 import {currentCredentials} from './credentials'
 
 // ----------------------------------------------------------------
-export const submitData = (): void => {
+export const submitData = (newLogs: TrainLogItf[],selectedMuscle:MuscleNameType): void => {
     const { ID, token } = currentCredentials();
     const postData = {
         id: ID,
         token: token,
-        method: "addData" // Assuming 'addData' is your method identifier
+        method: "addData",
+        logs: JSON.stringify(newLogs), // Stringify the newLogs array
+        muscle: selectedMuscle
     };
 
     axios.post(connectionUrl, postData, connectionData)

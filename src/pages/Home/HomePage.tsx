@@ -106,11 +106,13 @@ const HomePage = () => {
     }
 
     const handleAddNewExercise = () => {
-        addNewLog(true); // True indicates a different exercise
-    }
-
-    const handleExerciseChange = (selectedExercise: ExerciseType) => {
         setSelectedExercise(selectedExercise);
+        // Submit data
+        submitData(newLogs, selectedMuscle);
+        // Change the newlogs to loaded logs
+        handleContinue(selectedMuscle);
+        // Reset the new logs
+        setNewLogs([]);
         // Prepare a new log entry
         addNewLog(true);
     }
@@ -121,7 +123,6 @@ const HomePage = () => {
             const logs = data.map(log => ({ ...log, date: new Date(log.date) }));
             setLatestLogs(logs);
         });
-
     };
 
     const handleStartWorkout = () => {
@@ -139,9 +140,6 @@ const HomePage = () => {
 
     return (
         <div>
-            {/* Other UI elements */}
-            <button onClick={handleGetData}>Get Data</button>
-
             {/* Start Workout button */}
             {!workoutStarted && (
                 <button onClick={handleStartWorkout}>Start Workout</button>
@@ -159,12 +157,6 @@ const HomePage = () => {
 
             {/* Latest Logs Table */}
             <FadeInSection isVisible={!!selectedMuscle}>
-                <select onChange={(e) => handleExerciseChange(e.target.value)} value={selectedExercise}>
-                    <option value="">Select Exercise</option>
-                    {exercises.map(exercise => (
-                        <option key={exercise} value={exercise}>{exercise}</option>
-                    ))}
-                </select>
                 {/* Add Other Person button */}
                 <button onClick={handleAddOtherPerson}>New Person</button>
 
